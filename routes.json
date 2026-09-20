@@ -1,0 +1,308 @@
+[
+  {
+    "id": "north-to-spain",
+    "name": "Hamburg → San Sebastián",
+    "country": "Germany · France · Spain",
+    "color": "#ff006e",
+    "summary": "Hamburg, Köln, Amiens, Rouen, Le Mans, Bordeaux, then the Spanish border at Irun to San Sebastián.",
+    "waypoints": [
+      {
+        "name": "Hamburg (start)",
+        "lat": 53.5511,
+        "lon": 9.9937,
+        "role": "start"
+      },
+      {
+        "name": "Köln",
+        "lat": 50.9375,
+        "lon": 6.9603
+      },
+      {
+        "name": "Amiens",
+        "lat": 49.8941,
+        "lon": 2.2958
+      },
+      {
+        "name": "Rouen (Normandie)",
+        "lat": 49.4432,
+        "lon": 1.0993
+      },
+      {
+        "name": "Le Mans",
+        "lat": 48.0061,
+        "lon": 0.1996
+      },
+      {
+        "name": "Bordeaux",
+        "lat": 44.8378,
+        "lon": -0.5792
+      },
+      {
+        "name": "Spanish border (Hendaye / Irun)",
+        "lat": 43.339,
+        "lon": -1.789
+      },
+      {
+        "name": "San Sebastián (end)",
+        "lat": 43.3183,
+        "lon": -1.9812,
+        "role": "end"
+      }
+    ]
+  },
+  {
+    "id": "north-to-delta",
+    "name": "Hamburg → Zeeland delta",
+    "country": "Germany · Netherlands",
+    "color": "#c9a227",
+    "summary": "Hamburg, Bremen, Groningen, Afsluitdijk, Amsterdam / Den Haag, then the Zeeland delta.",
+    "waypoints": [
+      {
+        "name": "Hamburg (start)",
+        "lat": 53.5511,
+        "lon": 9.9937,
+        "role": "start"
+      },
+      {
+        "name": "Bremen",
+        "lat": 53.0793,
+        "lon": 8.8017
+      },
+      {
+        "name": "Groningen",
+        "lat": 53.2194,
+        "lon": 6.5665
+      },
+      {
+        "name": "Afsluitdijk (Kornwerderzand)",
+        "lat": 53.07,
+        "lon": 5.34
+      },
+      {
+        "name": "Afsluitdijk (Den Oever)",
+        "lat": 52.934,
+        "lon": 5.044
+      },
+      {
+        "name": "Amsterdam",
+        "lat": 52.3676,
+        "lon": 4.9041
+      },
+      {
+        "name": "Den Haag",
+        "lat": 52.0705,
+        "lon": 4.3007
+      },
+      {
+        "name": "Zeeland delta (Oosterscheldekering) (end)",
+        "lat": 51.63,
+        "lon": 3.696,
+        "role": "end"
+      }
+    ]
+  },
+  {
+    "id": "antwerp-to-msm",
+    "name": "Antwerpen → Mont-Saint-Michel",
+    "country": "Belgium · France",
+    "color": "#1b9aaa",
+    "summary": "Antwerpen, Gent, Dunkerque, Dieppe, Honfleur (Normandie) and Mont-Saint-Michel.",
+    "waypoints": [
+      {
+        "name": "Antwerpen (start)",
+        "lat": 51.2194,
+        "lon": 4.4025,
+        "role": "start"
+      },
+      {
+        "name": "Gent",
+        "lat": 51.0543,
+        "lon": 3.7174
+      },
+      {
+        "name": "Dunkerque",
+        "lat": 51.0343,
+        "lon": 2.3768
+      },
+      {
+        "name": "Dieppe",
+        "lat": 49.9223,
+        "lon": 1.077
+      },
+      {
+        "name": "Honfleur (Normandie)",
+        "lat": 49.419,
+        "lon": 0.233
+      },
+      {
+        "name": "Mont-Saint-Michel (end)",
+        "lat": 48.6361,
+        "lon": -1.5115,
+        "role": "end"
+      }
+    ]
+  },
+  {
+    "id": "rennes-to-spain",
+    "name": "Rennes → San Sebastián",
+    "country": "France · Spain",
+    "color": "#7b2cbf",
+    "summary": "Rennes, Nantes, La Rochelle, Bordeaux, Biarritz, then the Spanish border at Irún to San Sebastián.",
+    "waypoints": [
+      {
+        "name": "Rennes (start)",
+        "lat": 48.1173,
+        "lon": -1.6778,
+        "role": "start"
+      },
+      {
+        "name": "Nantes",
+        "lat": 47.2184,
+        "lon": -1.5536
+      },
+      {
+        "name": "La Rochelle",
+        "lat": 46.1603,
+        "lon": -1.1511
+      },
+      {
+        "name": "Bordeaux",
+        "lat": 44.8378,
+        "lon": -0.5792
+      },
+      {
+        "name": "Biarritz",
+        "lat": 43.4832,
+        "lon": -1.5586
+      },
+      {
+        "name": "Spanish border (Irún)",
+        "lat": 43.339,
+        "lon": -1.789
+      },
+      {
+        "name": "San Sebastián (end)",
+        "lat": 43.3183,
+        "lon": -1.9812,
+        "role": "end"
+      }
+    ]
+  },
+  {
+    "id": "stockholm-to-hamburg",
+    "name": "Stockholm → Hamburg",
+    "country": "Sweden · Denmark · Germany",
+    "color": "#e07a5f",
+    "summary": "Stockholm to Helsingborg, ferry to Helsingør, across Zealand and Lolland to Rødby, ferry to Puttgarden, then Hamburg.",
+    "waypoints": [
+      {
+        "name": "Stockholm (start)",
+        "lat": 59.3293,
+        "lon": 18.0686,
+        "role": "start"
+      },
+      {
+        "name": "Helsingborg (ferry)",
+        "lat": 56.0465,
+        "lon": 12.6945
+      },
+      {
+        "name": "Helsingør (ferry)",
+        "lat": 56.0361,
+        "lon": 12.6136
+      },
+      {
+        "name": "Rødby (ferry)",
+        "lat": 54.652,
+        "lon": 11.349
+      },
+      {
+        "name": "Puttgarden (ferry)",
+        "lat": 54.499,
+        "lon": 11.227
+      },
+      {
+        "name": "Hamburg (end)",
+        "lat": 53.5511,
+        "lon": 9.9937,
+        "role": "end"
+      }
+    ]
+  },
+  {
+    "id": "grand-tour",
+    "name": "Stockholm → San Sebastián (grand tour)",
+    "country": "Sweden · Denmark · Germany · Netherlands · Belgium · France · Spain",
+    "color": "#2d6a4f",
+    "summary": "Stockholm, Helsingborg, ferry to Helsingør, Köpenhamn, Zeeland (Vordingborg), Rødby–Puttgarden ferry, Hamburg, Amsterdam, Antwerp, Rennes, Bordeaux and San Sebastián.",
+    "waypoints": [
+      {
+        "name": "Stockholm (start)",
+        "lat": 59.3293,
+        "lon": 18.0686,
+        "role": "start"
+      },
+      {
+        "name": "Helsingborg (ferry)",
+        "lat": 56.0465,
+        "lon": 12.6945
+      },
+      {
+        "name": "Helsingør (ferry)",
+        "lat": 56.0361,
+        "lon": 12.6136
+      },
+      {
+        "name": "Köpenhamn",
+        "lat": 55.6761,
+        "lon": 12.5683
+      },
+      {
+        "name": "Zeeland (Vordingborg)",
+        "lat": 55.008,
+        "lon": 11.91
+      },
+      {
+        "name": "Rødby (ferry)",
+        "lat": 54.652,
+        "lon": 11.349
+      },
+      {
+        "name": "Puttgarden (ferry)",
+        "lat": 54.499,
+        "lon": 11.227
+      },
+      {
+        "name": "Hamburg",
+        "lat": 53.5511,
+        "lon": 9.9937
+      },
+      {
+        "name": "Amsterdam",
+        "lat": 52.3676,
+        "lon": 4.9041
+      },
+      {
+        "name": "Antwerp",
+        "lat": 51.2194,
+        "lon": 4.4025
+      },
+      {
+        "name": "Rennes",
+        "lat": 48.1173,
+        "lon": -1.6778
+      },
+      {
+        "name": "Bordeaux",
+        "lat": 44.8378,
+        "lon": -0.5792
+      },
+      {
+        "name": "San Sebastián (end)",
+        "lat": 43.3183,
+        "lon": -1.9812,
+        "role": "end"
+      }
+    ]
+  }
+]
