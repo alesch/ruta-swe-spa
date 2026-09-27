@@ -5,18 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Route Sweden → Spain</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <style>
   html, body, #map { height: 100%; margin: 0; }
   .pin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 3px rgba(0,0,0,.6); }
   .pin.start { background: #2ecc40; }
-  .pin.end { background: #111; }
-  .pin.place { width: 16px; height: 16px; background: #0074d9; border-radius: 3px; transform: rotate(45deg); }
+  .pin.end { width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 2px solid #111;
+             box-shadow: 0 0 3px rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center;
+             color: #111; font-size: 14px; }
+  .checkin.pause { width: 10px; height: 10px; border-radius: 50%; background: #2ecc40;
+                   border: 2px solid #fff; box-shadow: 0 0 3px rgba(0,0,0,.6); }
+  .checkin.night { width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 2px solid #111;
+                   box-shadow: 0 0 3px rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center;
+                   color: #111; font-size: 9px; }
 </style>
 </head>
 <body>
 <div id="map"></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="routes.js"></script>
 <script>
 const map = L.map('map').setView([50, 5], 5);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -24,34 +30,49 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-const all = [];
+const ENDPOINTS = [
+  { name: 'Skarpnäck, Stockholm', lat: 59.2745, lon: 18.1188, role: 'start' },
+  { name: 'Málaga', lat: 36.7213, lon: -4.4213, role: 'end' },
+];
 
-ROUTES.forEach(r => {
-  const line = L.polyline(r.path, { color: r.color, weight: 5, opacity: 0.85 }).addTo(map);
-  line.bindTooltip(r.name, { sticky: true });
-
-  r.waypoints.forEach(w => {
-    const role = w.role || 'via';
-    if (role === 'via') {
-      L.circleMarker([w.lat, w.lon], { radius: 4, color: r.color, fillColor: '#fff', fillOpacity: 1, weight: 2 })
-        .bindTooltip(w.name).addTo(map);
-    } else {
-      const icon = L.divIcon({ className: '', html: `<div class="pin ${role}"></div>`, iconSize: [14, 14], iconAnchor: [7, 7] });
-      L.marker([w.lat, w.lon], { icon }).bindTooltip(w.name).addTo(map);
-    }
-  });
-
-  all.push(line);
+ENDPOINTS.forEach(w => {
+  const size = w.role === 'end' ? 26 : 14;
+  const inner = w.role === 'end' ? '<i class="fa-solid fa-flag-checkered"></i>' : '';
+  const icon = L.divIcon({ className: '', html: `<div class="pin ${w.role}">${inner}</div>`, iconSize: [size, size], iconAnchor: [size / 2, size / 2] });
+  L.marker([w.lat, w.lon], { icon }).bindTooltip(w.name).addTo(map);
 });
 
-PLACES.forEach(p => {
-  const icon = L.divIcon({ className: '', html: '<div class="pin place"></div>', iconSize: [16, 16], iconAnchor: [8, 8] });
-  L.marker([p.lat, p.lon], { icon })
-    .bindTooltip(`${p.name}, ${p.country}`, { permanent: true, direction: 'right', offset: [10, 0] })
-    .addTo(map);
-});
+const INITIAL_BOUNDS = L.latLngBounds(ENDPOINTS.map(w => [w.lat, w.lon]));
+map.fitBounds(INITIAL_BOUNDS, { padding: [30, 30] });
 
-map.fitBounds(L.featureGroup(all).getBounds(), { padding: [30, 30] });
+const TRACKER_API = 'https://ruta-swe-spa-tracker.fly.dev/api/checkins';
+const checkinLayer = L.layerGroup().addTo(map);
+
+function loadCheckins() {
+  fetch(TRACKER_API)
+    .then(r => r.json())
+    .then(checkins => {
+      checkinLayer.clearLayers();
+      const sorted = [...checkins].sort((a, b) => new Date(a.ts) - new Date(b.ts));
+      let nightCount = 0;
+      sorted.forEach(c => {
+        if (c.kind === 'night') {
+          nightCount++;
+          const icon = L.divIcon({ className: '', html: '<div class="checkin night"><i class="fa-solid fa-bed"></i></div>', iconSize: [16, 16], iconAnchor: [8, 8] });
+          L.marker([c.lat, c.lon], { icon })
+            .bindTooltip(`Night #${nightCount}`)
+            .addTo(checkinLayer);
+        } else {
+          const icon = L.divIcon({ className: '', html: '<div class="checkin pause"></div>', iconSize: [10, 10], iconAnchor: [5, 5] });
+          L.marker([c.lat, c.lon], { icon }).addTo(checkinLayer);
+        }
+      });
+    })
+    .catch(() => { /* tracker offline or unreachable: keep showing the static map */ });
+}
+
+loadCheckins();
+setInterval(loadCheckins, 60000);
 </script>
 </body>
 </html>
