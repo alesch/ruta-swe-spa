@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Tiny check-in API for the trip tracker.
 
-Two endpoints that matter:
-  GET  /checkin/<token>  -- mobile page with "Rest stop" / "Night stay" buttons
-  POST /api/checkin      -- records one check-in (requires the token)
-  GET  /api/checkins     -- public, returns all check-ins as JSON (read by the map)
+Endpoints that matter:
+  GET    /checkin/<token>     -- mobile page: "Rest stop" / "Night stay" buttons + last 5, deletable
+  POST   /api/checkin         -- records one check-in (requires the token)
+  DELETE /api/checkin/<id>    -- removes one check-in by id (requires the token)
+  GET    /api/checkins        -- public, returns all check-ins as JSON (read by the map)
 
 Check-ins are appended to a JSON file on the mounted volume at DATA_DIR.
 """
@@ -54,6 +55,12 @@ CHECKIN_PAGE = """<!DOCTYPE html>
   #pause {{ background: #ff9f1c; }}
   #night {{ background: #5f27cd; }}
   #status {{ margin-top: 20px; font-size: 1.1rem; min-height: 3em; }}
+  #recent {{ margin-top: 24px; border-top: 1px solid #333; padding-top: 12px; }}
+  #recent h2 {{ font-size: 0.9rem; font-weight: normal; color: #999; margin: 0 0 8px; }}
+  .row {{ display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #222; }}
+  .row .label {{ font-size: 1rem; }}
+  .row .time {{ font-size: 0.85rem; color: #999; margin-left: 8px; }}
+  .row button {{ width: auto; margin: 0; padding: 8px 14px; font-size: 0.9rem; background: #333; border-radius: 8px; }}
 </style>
 </head>
 <body>
@@ -61,9 +68,47 @@ CHECKIN_PAGE = """<!DOCTYPE html>
 <button id="pause">☕ Rest stop</button>
 <button id="night">🌙 Night stay</button>
 <div id="status"></div>
+<div id="recent">
+  <h2>Last check-ins</h2>
+  <div id="recent-list"></div>
+</div>
 <script>
 const token = {token!r};
 const status = document.getElementById('status');
+const recentList = document.getElementById('recent-list');
+const KIND_LABEL = {{ pause: '☕ Rest stop', night: '🌙 Night stay' }};
+
+function loadRecent() {{
+  fetch('/api/checkins')
+    .then(r => r.json())
+    .then(checkins => {{
+      const last5 = [...checkins].sort((a, b) => new Date(b.ts) - new Date(a.ts)).slice(0, 5);
+      recentList.innerHTML = '';
+      if (last5.length === 0) {{
+        recentList.textContent = 'None yet.';
+        return;
+      }}
+      last5.forEach(c => {{
+        const row = document.createElement('div');
+        row.className = 'row';
+        const when = new Date(c.ts).toLocaleString();
+        row.innerHTML = `<span><span class="label">${{KIND_LABEL[c.kind] || c.kind}}</span><span class="time">${{when}}</span></span>`;
+        const del = document.createElement('button');
+        del.textContent = 'Delete';
+        del.onclick = () => deleteCheckin(c.id);
+        row.appendChild(del);
+        recentList.appendChild(row);
+      }});
+    }});
+}}
+
+function deleteCheckin(id) {{
+  fetch('/api/checkin/' + id, {{
+    method: 'DELETE',
+    headers: {{ 'Content-Type': 'application/json' }},
+    body: JSON.stringify({{ token }}),
+  }}).then(loadRecent);
+}}
 
 function checkin(kind) {{
   status.textContent = 'Getting your location…';
@@ -78,7 +123,7 @@ function checkin(kind) {{
         accuracy: pos.coords.accuracy,
       }}),
     }})
-      .then(r => r.ok ? status.textContent = '✓ Saved. You can close this page.'
+      .then(r => r.ok ? (status.textContent = '✓ Saved. You can close this page.', loadRecent())
                        : r.text().then(t => status.textContent = 'Error: ' + t))
       .catch(e => status.textContent = 'Error: ' + e);
   }}, err => {{
@@ -88,6 +133,7 @@ function checkin(kind) {{
 
 document.getElementById('pause').onclick = () => checkin('pause');
 document.getElementById('night').onclick = () => checkin('night');
+loadRecent();
 </script>
 </body>
 </html>
@@ -124,6 +170,19 @@ def api_checkin():
     checkins = load()
     checkins.append(entry)
     save(checkins)
+    return jsonify({"ok": True})
+
+
+@app.delete("/api/checkin/<id>")
+def api_delete_checkin(id):
+    data = request.get_json(force=True, silent=True) or {}
+    if data.get("token") != TOKEN:
+        abort(401)
+    checkins = load()
+    remaining = [c for c in checkins if c["id"] != id]
+    if len(remaining) == len(checkins):
+        abort(404)
+    save(remaining)
     return jsonify({"ok": True})
 
 
