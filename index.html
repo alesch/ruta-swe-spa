@@ -8,12 +8,10 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <style>
   html, body, #map { height: 100%; margin: 0; }
-  .pin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 3px rgba(0,0,0,.6); }
-  .pin.start { background: #2ecc40; }
   .pin.end { width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 2px solid #111;
              box-shadow: 0 0 3px rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center;
              color: #111; font-size: 14px; }
-  .checkin.pause { width: 10px; height: 10px; border-radius: 50%; background: #2ecc40;
+  .checkin.pause { width: 10px; height: 10px; border-radius: 50%; background: #ff9f1c;
                    border: 2px solid #fff; box-shadow: 0 0 3px rgba(0,0,0,.6); }
   .checkin.night { width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 2px solid #111;
                    box-shadow: 0 0 3px rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center;
@@ -30,23 +28,15 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-const ENDPOINTS = [
-  { name: 'Skarpnäck, Stockholm', lat: 59.2745, lon: 18.1188, role: 'start' },
-  { name: 'Málaga', lat: 36.7213, lon: -4.4213, role: 'end' },
-];
+const END = { name: 'Málaga', lat: 36.7213, lon: -4.4213 };
+const endIcon = L.divIcon({ className: '', html: '<div class="pin end"><i class="fa-solid fa-flag-checkered"></i></div>', iconSize: [26, 26], iconAnchor: [13, 13] });
+L.marker([END.lat, END.lon], { icon: endIcon }).bindTooltip(END.name).addTo(map);
 
-ENDPOINTS.forEach(w => {
-  const size = w.role === 'end' ? 26 : 14;
-  const inner = w.role === 'end' ? '<i class="fa-solid fa-flag-checkered"></i>' : '';
-  const icon = L.divIcon({ className: '', html: `<div class="pin ${w.role}">${inner}</div>`, iconSize: [size, size], iconAnchor: [size / 2, size / 2] });
-  L.marker([w.lat, w.lon], { icon }).bindTooltip(w.name).addTo(map);
-});
-
-const INITIAL_BOUNDS = L.latLngBounds(ENDPOINTS.map(w => [w.lat, w.lon]));
-map.fitBounds(INITIAL_BOUNDS, { padding: [30, 30] });
+map.setView([END.lat, END.lon], 5);
 
 const TRACKER_API = 'https://ruta-swe-spa-tracker.fly.dev/api/checkins';
 const checkinLayer = L.layerGroup().addTo(map);
+let hasFitBounds = false;
 
 function loadCheckins() {
   fetch(TRACKER_API)
@@ -67,6 +57,11 @@ function loadCheckins() {
           L.marker([c.lat, c.lon], { icon }).addTo(checkinLayer);
         }
       });
+      if (!hasFitBounds && sorted.length > 0) {
+        hasFitBounds = true;
+        const points = [[END.lat, END.lon], ...sorted.map(c => [c.lat, c.lon])];
+        map.fitBounds(L.latLngBounds(points), { padding: [30, 30] });
+      }
     })
     .catch(() => { /* tracker offline or unreachable: keep showing the static map */ });
 }
